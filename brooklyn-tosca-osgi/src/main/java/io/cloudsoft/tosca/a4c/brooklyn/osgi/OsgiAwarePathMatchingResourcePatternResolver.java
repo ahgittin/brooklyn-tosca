@@ -36,9 +36,12 @@ public class OsgiAwarePathMatchingResourcePatternResolver extends PathMatchingRe
 
     private static final Logger LOG = LoggerFactory.getLogger(OsgiAwarePathMatchingResourcePatternResolver.class);
 
+    public OsgiAwarePathMatchingResourcePatternResolver() {
+        super( OsgiAwarePathMatchingResourcePatternResolver.class.getClassLoader() );
+    }
+    
     @Override
     public Resource[] getResources(String locationPattern) throws IOException {
-        // classpath*:alien4cloud/**/*.class
         if (locationPattern.startsWith("classpath*:")) {
             String pattern = Strings.removeFromStart(locationPattern, "classpath*:");
             int ls = pattern.lastIndexOf('/');
@@ -48,37 +51,16 @@ public class OsgiAwarePathMatchingResourcePatternResolver extends PathMatchingRe
             if (path.endsWith("**/")) path = Strings.removeFromEnd(path, "**/");
             if (Strings.isBlank(file)) file = "*";
             
-            ClassLoader loader = OsgiAwarePathMatchingResourcePatternResolver.class.getClassLoader();
             BundleWiring wiring = FrameworkUtil.getBundle(OsgiAwarePathMatchingResourcePatternResolver.class).adapt(BundleWiring.class);
             
-            // doesnt' look in bundle classpath :(
-            // http://stackoverflow.com/questions/8456617/querying-jar-entries-in-an-eclipse-plugin
-//            List<URL> result = wiring.findEntries(path, file, BundleWiring.FINDENTRIES_RECURSE);
-            
-            // ah, but this does!
             Collection<String> result1 = wiring.listResources(path, file, BundleWiring.LISTRESOURCES_LOCAL | BundleWiring.LISTRESOURCES_RECURSE);
-            LOG.debug("Osgi resolver first pass found "+result1.size()+" match(es) for "+locationPattern+" ("+path+" "+file+"): "+result1);
             List<String> result = MutableList.copyOf(result1);
             
-//            List<URL> result = new ArrayList<URL>();
-//            for (String r: result1) {
-//                URL r2 = loader.getResource(r);
-//                if (r2==null) {
-//                    LOG.warn("Could not load "+r+"; skipping");
-//                } else {
-//                    result.add( r2 );
-//                }
-//            }
-//            LOG.debug("Osgi resolver found "+result.size()+" match(es) for "+locationPattern+" ("+path+" "+file+"): "+result);
-            
-//            Resource[] resultA = new Resource[result.size()];
-//            for (int i=0; i<result.size(); i++) {
-//                resultA[i] = new ClassPathResource(result.get(i), );
-//            }
+            LOG.debug("Osgi resolver found "+result.size()+" match(es) for "+locationPattern+" ("+path+" "+file+"): "+result);
             
             Resource[] resultA = new Resource[result1.size()];
             for (int i=0; i<result1.size(); i++) {
-                resultA[i] = new ClassPathResource(result.get(i), loader);
+                resultA[i] = new ClassPathResource(result.get(i), getClassLoader());
             }
 
             return resultA;

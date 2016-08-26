@@ -32,7 +32,7 @@ public class Alien4CloudSpringContext {
             Stopwatch s = Stopwatch.createStarted();
 
             AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-
+            
             if (null != resourceLoader) {
                 ctx.setResourceLoader(resourceLoader);
             }
