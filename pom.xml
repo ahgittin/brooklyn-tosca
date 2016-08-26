@@ -55,6 +55,14 @@
             <id>repo.opensource.snapshot.fastconnect.org</id>
             <url>http://fastconnect.org/maven/content/repositories/opensource-snapshot</url>
         </repository>
+        <repository>  <!-- needed for social/github and maybe others? -->
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>http://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
     <distributionManagement>
