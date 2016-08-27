@@ -70,6 +70,11 @@
 
         <dependency>
             <groupId>alien4cloud</groupId>
+            <artifactId>alien4cloud-common</artifactId>
+            <version>${alien.version}.cloudsoft</version>
+        </dependency>
+        <dependency>
+            <groupId>alien4cloud</groupId>
             <artifactId>alien4cloud-core</artifactId>
             <exclusions>
                 <exclusion>

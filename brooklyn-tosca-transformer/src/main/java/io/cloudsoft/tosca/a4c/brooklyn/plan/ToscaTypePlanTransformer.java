@@ -1,11 +1,14 @@
 package io.cloudsoft.tosca.a4c.brooklyn.plan;
 
+import io.cloudsoft.tosca.a4c.brooklyn.ApplicationSpecsBuilder;
+import io.cloudsoft.tosca.a4c.brooklyn.ToscaApplication;
+import io.cloudsoft.tosca.a4c.platform.Alien4CloudSpringContext;
+import io.cloudsoft.tosca.a4c.platform.Alien4CloudToscaPlatform;
+import io.cloudsoft.tosca.a4c.platform.ToscaPlatform;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import io.cloudsoft.tosca.a4c.brooklyn.ApplicationSpecsBuilder;
-import io.cloudsoft.tosca.a4c.brooklyn.ToscaApplication;
 
 import org.apache.brooklyn.api.entity.Application;
 import org.apache.brooklyn.api.entity.EntitySpec;
@@ -28,14 +31,11 @@ import org.apache.brooklyn.util.guava.Maybe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.ResourceLoader;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import io.cloudsoft.tosca.a4c.platform.Alien4CloudSpringContext;
-import io.cloudsoft.tosca.a4c.platform.Alien4CloudToscaPlatform;
-import io.cloudsoft.tosca.a4c.platform.ToscaPlatform;
-
-import org.springframework.core.io.ResourceLoader;
+import alien4cloud.utils.TypeScanner;
 
 public class ToscaTypePlanTransformer extends AbstractTypePlanTransformer {
 
@@ -92,6 +92,7 @@ public class ToscaTypePlanTransformer extends AbstractTypePlanTransformer {
                         oldCL = Thread.currentThread().getContextClassLoader(); 
                         Thread.currentThread().setContextClassLoader(getResourceLoader().getClass().getClassLoader());
                     }
+                    TypeScanner.setResourceLoader(resourceLoader);
                     ApplicationContext applicationContext = Alien4CloudSpringContext.newApplicationContext(mgmt, resourceLoader);
                     platform = applicationContext.getBean(ToscaPlatform.class);
                     ((LocalManagementContext) mgmt).getBrooklynProperties().put(TOSCA_ALIEN_PLATFORM, platform);
