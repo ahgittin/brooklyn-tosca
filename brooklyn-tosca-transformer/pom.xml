@@ -70,11 +70,6 @@
 
         <dependency>
             <groupId>alien4cloud</groupId>
-            <artifactId>alien4cloud-common</artifactId>
-            <version>${alien.version}.cloudsoft</version>
-        </dependency>
-        <dependency>
-            <groupId>alien4cloud</groupId>
             <artifactId>alien4cloud-core</artifactId>
             <exclusions>
                 <exclusion>
@@ -94,6 +89,16 @@
                     <artifactId>jackson-dataformat-yaml</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>fr.lucboutier.elasticsearch</groupId>
+            <artifactId>elasticsearch-mapping</artifactId>
+            <version>1.4.0.cloudsoft</version>
+        </dependency>
+        <dependency>
+            <groupId>alien4cloud</groupId>
+            <artifactId>alien4cloud-common</artifactId>
+            <version>${alien.version}.cloudsoft</version>
         </dependency>
 
         <!-- these versions required by above, but this requirement (from dependencyManagement in a4c) is not exported -->

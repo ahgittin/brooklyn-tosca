@@ -28,6 +28,7 @@ import org.apache.brooklyn.core.typereg.RegisteredTypes;
 import org.apache.brooklyn.entity.stock.BasicApplication;
 import org.apache.brooklyn.util.exceptions.Exceptions;
 import org.apache.brooklyn.util.guava.Maybe;
+import org.elasticsearch.util.AnnotationScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -93,6 +94,7 @@ public class ToscaTypePlanTransformer extends AbstractTypePlanTransformer {
                         Thread.currentThread().setContextClassLoader(getResourceLoader().getClass().getClassLoader());
                     }
                     TypeScanner.setResourceLoader(resourceLoader);
+                    AnnotationScanner.setResourceLoader(resourceLoader);
                     ApplicationContext applicationContext = Alien4CloudSpringContext.newApplicationContext(mgmt, resourceLoader);
                     platform = applicationContext.getBean(ToscaPlatform.class);
                     ((LocalManagementContext) mgmt).getBrooklynProperties().put(TOSCA_ALIEN_PLATFORM, platform);
