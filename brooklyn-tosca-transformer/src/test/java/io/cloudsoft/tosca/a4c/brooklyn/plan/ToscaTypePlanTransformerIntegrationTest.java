@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -626,6 +627,35 @@ public class ToscaTypePlanTransformerIntegrationTest extends Alien4CloudIntegrat
         assertFlagValueContains(custom1, VanillaSoftwareProcess.CUSTOMIZE_COMMAND.getName(), "echo configure arg1"); // in configure.sh
     }
 
+    @Test
+    public void testPropertiesIncludingList() throws Exception {
+        EntitySpec<? extends Application> appSpec = create("classpath://templates/properties-tosca-list.yaml");
+        // Check the basic structure
+        assertNotNull(appSpec, "spec");
+        assertEquals(appSpec.getType(), BasicApplication.class);
+
+        assertEquals(appSpec.getChildren().size(), 1, "Expected exactly one child of root application");
+        EntitySpec<?> compute = Iterators.getOnlyElement(appSpec.getChildren().iterator());
+        assertEquals(compute.getType(), SameServerEntity.class);
+
+        assertEquals(compute.getChildren().size(), 1, "Expected exactly one grandchild of root application");
+        EntitySpec<?> custom1 = Iterators.getOnlyElement(compute.getChildren().iterator());
+        assertEquals(custom1.getType(), VanillaSoftwareProcess.class);
+
+        // Check that the inputs have been set as exports on the scripts
+        List<String> expected = Arrays.asList("arg1=\"foo\"", "arg2=\"bar\"", "arg3=\"boo\"");
+        expected.forEach(s -> assertFlagValueContains(custom1, VanillaSoftwareProcess.CUSTOMIZE_COMMAND.getName(), s));
+        
+        // and deploy and ensure we get the attribute
+        
+        Application appInst = this.mgmt.getEntityManager().createEntity(appSpec);
+        Entity custom1I = Iterables.getOnlyElement( Iterables.getOnlyElement( appInst.getChildren() ).getChildren() );
+        Dumper.dumpInfo(custom1I);
+        String customCmd = custom1I.config().get(VanillaSoftwareProcess.CUSTOMIZE_COMMAND);
+        expected.forEach(s -> Asserts.assertStringContains(customCmd, s));
+        Asserts.assertStringDoesNotContain(customCmd, "attributeWhenReady", "bip", "baz");
+    }
+    
     // quite restrictive what is supported in A4C:
     // attribute can only be set on node type, not in node template.
     // it can only define a static _default_ or a subset of functions, operation output or concat.

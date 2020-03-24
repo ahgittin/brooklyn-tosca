@@ -54,6 +54,7 @@ import alien4cloud.model.components.IndexedArtifactToscaElement;
 import alien4cloud.model.components.IndexedInheritableToscaElement;
 import alien4cloud.model.components.IndexedRelationshipType;
 import alien4cloud.model.components.Interface;
+import alien4cloud.model.components.ListPropertyValue;
 import alien4cloud.model.components.Operation;
 import alien4cloud.model.components.ScalarPropertyValue;
 import alien4cloud.model.deployment.DeploymentTopology;
@@ -239,6 +240,9 @@ public class Alien4CloudFacade implements ToscaFacade<Alien4CloudApplication> {
         }
         if (v instanceof ComplexPropertyValue) {
             return Optional.<Object>fromNullable(((ComplexPropertyValue) v).getValue());
+        }
+        if (v instanceof ListPropertyValue) {
+            return Optional.<Object>fromNullable(((ListPropertyValue) v).getValue());
         }
         if (!(v instanceof FunctionPropertyValue)) {
             LOG.warn("Ignoring unsupported property value " + v);

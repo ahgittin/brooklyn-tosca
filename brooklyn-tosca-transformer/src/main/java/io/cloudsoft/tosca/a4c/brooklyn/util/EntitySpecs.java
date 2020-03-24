@@ -16,6 +16,7 @@ public class EntitySpecs {
 
     public static EntitySpec<?> findChildEntitySpecByPlanId(EntitySpec<? extends Application> app, String planId){
 
+        // TODO find all!!
         Optional<EntitySpec<?>> result = Iterables.tryFind(app.getChildren(),
                 configSatisfies(BrooklynCampConstants.PLAN_ID, planId));
 

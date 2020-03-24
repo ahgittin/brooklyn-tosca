@@ -1,0 +1,66 @@
+tosca_definitions_version: tosca_simple_yaml_1_0_0_wd03
+
+description: Test TOSCA
+
+template_name: test
+template_version: 0.1.0-SNAPSHOT
+
+imports:
+  - tosca-normative-types:1.0.0.wd06-SNAPSHOT
+
+node_types:
+
+  x-node:
+    derived_from: tosca.nodes.Compute
+    attributes:
+      x.url:
+        type: string
+  
+  x-instance:
+    derived_from: tosca.nodes.WebServer
+
+
+
+
+
+topology_template:
+
+  node_templates:
+    x-host:
+      type: x-node
+
+    x:
+      type: x-instance
+      artifacts: {}
+      requirements:
+        - host: x-host
+        
+  groups:
+    add_brooklyn_location:
+      members: [x-host]
+      policies:
+      - brooklyn.location: localhost
+
+
+    latency:
+      members: [ x-host ]
+      policies:
+      - latency_detector:
+          type: org.apache.brooklyn.policy.enricher.HttpLatencyDetector
+          name: http.latecy
+          latencyDetector.period: 1s
+          latencyDetector.requireServiceUp: true
+          latencyDetector.rollup: 600s
+          latencyDetector.url: http://localhost:8069
+
+    http_sensor_mgt:
+      members: [ x-host ]
+      policies:
+      - http_sensor:
+         type: org.apache.brooklyn.core.sensor.http.HttpRequestSensor
+         properties:
+          name: http.healthy
+          period: 5s
+          suppressDuplicates: true
+          jsonPath: "$"
+          uri: http://localhost:8081/v1/server/up/extended/2

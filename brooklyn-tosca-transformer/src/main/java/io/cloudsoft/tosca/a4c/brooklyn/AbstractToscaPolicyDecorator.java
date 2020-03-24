@@ -21,6 +21,10 @@ public abstract class AbstractToscaPolicyDecorator implements ToscaPolicyDecorat
         this.mgmt = mgmt;
     }
 
+    public Map<String, ?> getToscaObjectPropertiesExtended(Map<String, ?> toscaObjectData) {
+        return getToscaObjectPropertiesExtendedExcluding(toscaObjectData, true, false, POLICY_FLAG_NAME, POLICY_FLAG_TYPE);
+    }
+    
     /**
      * Given a map eg of a tosca type,
      * return everything under the TOSCA "properties" key, merged on top of things at the root
@@ -32,14 +36,25 @@ public abstract class AbstractToscaPolicyDecorator implements ToscaPolicyDecorat
      * @param toscaObjectData
      */
     @SuppressWarnings("unchecked")
-    public Map<String, ?> getToscaObjectPropertiesExtended(Map<String, ?> toscaObjectData){
+    public Map<String, ?> getToscaObjectPropertiesExtendedExcluding(Map<String, ?> toscaObjectData, 
+            boolean promoteToscaProperties, boolean promoteBrooklynConfig, String... keysToOmit){
         Map<String, Object> data = MutableMap.copyOf(toscaObjectData);
-        data.remove(POLICY_FLAG_NAME);
-        data.remove(POLICY_FLAG_TYPE);
+        for (String keyToOmit: keysToOmit) {
+            data.remove(keyToOmit);
+        }
         
-        Map<String,?> props = (Map<String,?>) data.remove(POLICY_FLAG_PROPERTIES);
-        if (props!=null) {
-            data.putAll(props);
+        if (promoteToscaProperties) {
+            Map<String,?> props = (Map<String,?>) data.remove(POLICY_FLAG_PROPERTIES);
+            if (props!=null) {
+                data.putAll(props);
+            }
+        }
+        
+        if (promoteBrooklynConfig) {
+            Object brooklynConfig = data.remove(POLICY_FLAG_BROOKLYN_CONFIG);
+            if (brooklynConfig!=null) {
+                data.putAll((Map<String,?>)brooklynConfig);
+            }
         }
 
         // evaluate DSL

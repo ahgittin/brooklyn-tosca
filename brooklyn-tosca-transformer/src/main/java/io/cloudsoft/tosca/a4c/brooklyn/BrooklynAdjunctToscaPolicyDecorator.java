@@ -56,7 +56,7 @@ public class BrooklynAdjunctToscaPolicyDecorator extends AbstractToscaPolicyDeco
     protected ConfigBag getBrooklynObjectDefinition(String type, Map<String, ?> toscaObjectData) {
         List<?> policies = ImmutableList.of(ImmutableMap.of(
                 "type", type,
-                BrooklynCampReservedKeys.BROOKLYN_CONFIG, getToscaObjectPropertiesExtended(toscaObjectData)
+                BrooklynCampReservedKeys.BROOKLYN_CONFIG, getToscaObjectPropertiesExtendedExcluding(toscaObjectData, true, true, POLICY_FLAG_NAME, POLICY_FLAG_TYPE)
                 )
         );
         Map<?, ?> policyDefinition = ImmutableMap.of(brooklynYamlKey, policies);
